@@ -1,2 +1,2 @@
-export { firebase } from './firebase'
-export { twilio } from './twilio'
+export * from './firebase'
+export * from './twilio'

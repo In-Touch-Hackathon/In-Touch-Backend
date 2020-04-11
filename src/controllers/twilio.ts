@@ -25,3 +25,6 @@ export const voice = (req: Request, res: Response) => {
     res.type('text/xml');
     res.send(twiml.toString());
 }
+
+export const menu = (req: Request, res: Response) => {
+}
