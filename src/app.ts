@@ -1,19 +1,22 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response } from 'express'
 import * as express from 'express'
 import * as cors from 'cors'
 import * as helmet from 'helmet'
+import {config} from 'dotenv'
+import { routes } from './routes'
 
-import { voice } from './controllers/voice'
+
+// load .env
+config()
 
 const app = express()
 const router = Router()
-const port = 3000
+const port =  process.env.PORT || 3000
 
 app.use(cors())
 app.use(helmet())
 app.use(express.json())
-app.use(router)
+app.use(routes(router))
 
-router.get('/voice', voice);
 
 app.listen(port, () => console.log(`Server started on port ${port}`))

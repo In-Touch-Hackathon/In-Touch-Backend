@@ -187,3 +187,6 @@ tmp/
 temp/
 
 # End of https://www.gitignore.io/api/node,jetbrains+iml
+
+# Firebase Service Account Key
+serviceAccountKey.json

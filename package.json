@@ -3,12 +3,19 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "start": "nodemon"
+  },
   "dependencies": {
     "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "firebase-admin": "^8.10.0",
     "helmet": "^3.22.0",
     "libphonenumber-js": "^1.7.50",
+    "nodemon": "^2.0.3",
+    "ts-node": "^8.8.2",
     "twilio": "^3.42.1",
     "uuid": "^7.0.3"
   },

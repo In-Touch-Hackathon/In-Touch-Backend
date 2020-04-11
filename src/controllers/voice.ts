@@ -22,4 +22,6 @@ export const voice = (req: Request, res: Response) => {
         },
         conferenceId
     )
+    res.type('text/xml');
+    res.send(twiml.toString());
 }
