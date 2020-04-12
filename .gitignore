@@ -188,5 +188,8 @@ temp/
 
 # End of https://www.gitignore.io/api/node,jetbrains+iml
 
+# Output js files
+build/
+
 # Firebase Service Account Key
 serviceAccountKey.json
