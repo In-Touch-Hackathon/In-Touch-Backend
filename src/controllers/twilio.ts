@@ -1,8 +1,6 @@
 import { Request, Response } from 'express'
-import { firebase } from '../libraries'
-//import VoiceResponse from 'twilio/lib/twiml/VoiceResponse'
 import { twiml } from 'twilio'
-import { v4 as uuidv4 } from 'uuid'
+import {speakStatistics, statistics} from "../data";
 const { VoiceResponse } = twiml
 // WIP, doesn't work yet
 
@@ -23,29 +21,6 @@ const welcome = (req: Request, res: Response) => {
     res.send(twiml.toString());
 }
 
-
-
-const voice = (req: Request, res: Response) => {
-    const twiml = new VoiceResponse()
-    const conferenceId = uuidv4()
-
-    twiml.say(
-        { 'voice': 'alice' },
-        'Welcome to In-Touch. Please wait while we find an available volunteer'
-    )
-
-    twiml.dial().conference(
-        {
-            maxParticipants: 2,
-            startConferenceOnEnter: false,
-            endConferenceOnExit: true
-        },
-        conferenceId
-    )
-    res.type('text/xml');
-    res.send(twiml.toString());
-}
-
 const menu = (req: Request, res: Response) => {
     const { Digits } = req.body
 
@@ -60,7 +35,7 @@ const menu = (req: Request, res: Response) => {
 
 const covid19Update = (res: Response) => {
     const twiml = new VoiceResponse();
-    twiml.say({'voice': 'alice'}, `covid 19 update`);
+    twiml.say({'voice': 'alice'}, speakStatistics(statistics));
     res.type('text/xml');
     res.send(twiml.toString())
 }
@@ -84,4 +59,4 @@ const returnWelcome = (res: Response) => {
     res.send(twiml.toString())
 }
 
-export { welcome, menu, voice }
+export { welcome, menu }
