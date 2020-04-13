@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { getUserPhone, twilio } from '../libraries'
+import {addCodeToFirebase, getUserPhone, twilio} from '../libraries'
 import {randomCode} from "../util";
 
 
@@ -22,6 +22,8 @@ const verify = async(req: Request, res: Response) => {
 
     const phoneNumber = await getUserPhone(auth.uid)
     const code = randomCode()
+
+    await addCodeToFirebase(auth.uid, code)
      
     console.log("calling")
     try {

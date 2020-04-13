@@ -12,4 +12,14 @@ const getUser = async (uid: string) =>
 const getUserPhone = async (uid: string) =>
     getUser(uid).then(doc => doc.get('phoneNumber'))
 
-export { firebase, getUser, getUserPhone }
+const addCodeToFirebase = async (uid: string, code: string) => {
+    const doc = db.doc(`codes/${uid}`)
+    await doc.set({ code })
+
+    return setTimeout(async doc => {
+        console.log('deleting')
+        await doc.delete()
+    }, 5*60*1000, doc)
+}
+
+export { addCodeToFirebase, firebase, getUser, getUserPhone }
