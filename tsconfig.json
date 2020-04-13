@@ -4,7 +4,8 @@
     "target": "es5",
     "sourceMap": true,
     "outDir": "build",
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "downlevelIteration": true
   },
   "exclude": [
     "node_modules"

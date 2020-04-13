@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
-import {getUser, twilio} from '../libraries'
+import { getUserPhone, twilio } from '../libraries'
+import {randomCode} from "../util";
 
 
 const register = (req: Request, res: Response) => {
@@ -19,18 +20,16 @@ const self = (req: Request, res: Response) => {
 const verify = async(req: Request, res: Response) => {
     const { auth } = req
 
-    const user = await getUser(auth.uid)
-    const phoneNumber = user.get('phoneNumber')
-
-    const code = "test " //set code
+    const phoneNumber = await getUserPhone(auth.uid)
+    const code = randomCode()
      
     console.log("calling")
     try {
         let result =  await twilio.calls
         .create({
-            twiml: `<Response><Say>Your In Touch verification code is ${code}</Say></Response>`,
+            twiml: `<Response><Say>Your In Touch verification code is ${[...code].join(' ')}</Say></Response>`,
             to: phoneNumber,
-            from: '+6498867225'
+            from: process.env.TWILIO_PHONE
         })
         console.log(result)
         res.status(200).send({ message: 'Call sent successfully' })

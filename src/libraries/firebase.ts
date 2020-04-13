@@ -9,4 +9,7 @@ const db = firebase.firestore();
 const getUser = async (uid: string) =>
     db.doc(`users/${uid}`).get()
 
-export { firebase, getUser }
+const getUserPhone = async (uid: string) =>
+    getUser(uid).then(doc => doc.get('phoneNumber'))
+
+export { firebase, getUser, getUserPhone }
