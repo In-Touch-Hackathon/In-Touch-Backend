@@ -5,23 +5,19 @@ const DATA_SOURCE = 'https://www.health.govt.nz/our-work/diseases-and-conditions
 
 export let statistics: Statistics = null;
 
-export class Statistics {
-    public cases: number; // confirmed and probable
-    public confirmed_cases: number;
-    public probable_cases: number;
-    public cases_in_hospital: number;
-    public recovered: number;
-    public deaths: number;
-    public timestamp: string;
+export type Statistics = {
+    cases: number; // confirmed and probable
+    confirmed_cases: number;
+    probable_cases: number;
+    cases_in_hospital: number;
+    recovered: number;
+    deaths: number;
+    timestamp: string;
+}
 
-    public constructor(timestamp: string) {
-        this.timestamp = timestamp
-    }
-
-    public speak(): string {
-        return `In New Zealand, as of ${this.timestamp}, there has been ${this.cases} cases`
-            + `, ${this.recovered} have recovered, and ${this.deaths} have died.`
-    }
+const speak_statistics = (stats: Statistics): string => {
+    return `In New Zealand, as of ${stats.timestamp}, there has been ${stats.cases} cases`
+        + `, ${stats.recovered} have recovered, and ${stats.deaths} have died.`
 }
 
 export const fetch_data = async (): Promise<Statistics> => {
@@ -29,7 +25,15 @@ export const fetch_data = async (): Promise<Statistics> => {
     let body = await response.text();
     let parser = load(body);
     let timestamp = parser("table caption").first().text().replace("As at ", "");
-    let stats = new Statistics(timestamp);
+    let stats: Statistics = {
+        cases: null,
+        confirmed_cases: null,
+        probable_cases: null,
+        cases_in_hospital: null,
+        recovered: null,
+        deaths: null,
+        timestamp: timestamp,
+    };
     parser("tbody tr").each((_, e) => {
         let header = parser("th", e).text();
         if (header.startsWith("Number of confirmed cases")) {
