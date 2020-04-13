@@ -3,6 +3,8 @@ import fetch from 'node-fetch'
 
 const DATA_SOURCE = 'https://www.health.govt.nz/our-work/diseases-and-conditions/covid-19-novel-coronavirus/covid-19-current-situation/covid-19-current-cases'
 
+export let statistics: Statistics = null;
+
 export class Statistics {
     public cases: number; // confirmed and probable
     public confirmed_cases: number;
@@ -26,7 +28,7 @@ export const fetch_data = async (): Promise<Statistics> => {
     let response = await fetch(DATA_SOURCE);
     let body = await response.text();
     let parser = load(body);
-    let timestamp = parser("table caption").first().text().replace("As at", "");
+    let timestamp = parser("table caption").first().text().replace("As at ", "");
     let stats = new Statistics(timestamp);
     parser("tbody tr").each((_, e) => {
         let header = parser("th", e).text();
@@ -45,6 +47,13 @@ export const fetch_data = async (): Promise<Statistics> => {
         }
     })
     return stats;
+}
+
+export const schedule_data_fetch = async () => {
+    statistics = await fetch_data();
+    setInterval(async () => {
+        statistics = await fetch_data();
+    }, 12 * 60 * 60 * 1_000); // Updates every 12 hours (half a day)
 }
 
 const parse_row = (parser, element): number => {
