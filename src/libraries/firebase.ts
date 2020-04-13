@@ -1,8 +1,14 @@
 import * as firebase from 'firebase-admin'
 
 firebase.initializeApp({
-    credential: firebase.credential.applicationDefault(),
-    databaseURL: 'https://in-touch-hackathon.firebaseio.com'
+    credential: firebase.credential.applicationDefault()
 })
 
-export { firebase }
+const db = firebase.firestore();
+
+const getSelf =  async(uid: string) => {
+    let users = await db.collection('users').get()
+    console.log(users)
+}
+
+export { firebase, getSelf }

@@ -1,14 +1,16 @@
 import { Router } from "express";
 
-import { voice } from './controllers/twilio'
+import { welcome, menu } from './controllers/twilio'
 import { healthcheck } from './controllers/healthcheck';
-import { verify } from './controllers/verify';
-import { auth } from './middleware/auth';
+import { register, self, verify } from './controllers/api'
+
+import { validate, auth } from "./middleware";
 
 const routes = (router: Router): Router => {
 
     // Twilio Incoming Call
-    router.post('/voice', voice)
+    router.post('/voice', welcome)
+    router.post('/voice/menu', menu)
     router.post('/menu')
 
     // HealthCheck
@@ -17,7 +19,12 @@ const routes = (router: Router): Router => {
     // Verify SMS
     router.post('/verify', auth, verify)
 
+    // Register - phone number + name only
+    //router.post('/register', postRegister, validate, register)
 
+    // GetSelf - getself
+
+    //router.get('/self', auth, self)
 
     return router
 }

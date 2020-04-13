@@ -9,12 +9,13 @@ declare module 'express' {
 }
 
 export const auth = async (req: Request, res: Response, next: Function) => {
-    const [type, token] = req.headers.authorization.split(' ')
-
-    if (type !== 'Bearer') {
-        return res.status(401).send({ message: 'Unauthorized' })
-    }
     try {
+        const [type, token] = req.headers.authorization.split(' ')
+
+        if (type !== 'Bearer') {
+            return res.status(401).send({ message: 'Unauthorized' })
+        }
+
         req.auth = await firebase.auth().verifyIdToken(token)
     } catch (e) {
         return res.status(401).send({ message: 'Unauthorized' })
