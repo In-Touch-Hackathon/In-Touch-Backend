@@ -6,9 +6,7 @@ firebase.initializeApp({
 
 const db = firebase.firestore();
 
-const getSelf =  async(uid: string) => {
-    let users = await db.collection('users').get()
-    console.log(users)
-}
+const getUser = async (uid: string) =>
+    db.doc(`users/${uid}`).get()
 
-export { firebase, getSelf }
+export { firebase, getUser }
