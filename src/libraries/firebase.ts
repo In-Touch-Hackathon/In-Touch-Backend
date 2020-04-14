@@ -6,6 +6,9 @@ firebase.initializeApp({
 
 const db = firebase.firestore();
 
+const modifyUser = async (uid: string, user: any) => 
+    db.doc(`users/${uid}`).set(user)
+
 const getUser = async (uid: string) =>
     db.doc(`users/${uid}`).get()
 
@@ -22,4 +25,15 @@ const addCodeToFirebase = async (uid: string, code: string) => {
     }, 5*60*1000, doc)
 }
 
-export { addCodeToFirebase, firebase, getUser, getUserPhone }
+const verifyCode = async (uid: string, code: string) => {
+    const doc = await db.doc(`users/${uid}`).get()
+    if (!doc.exists) {
+        throw new Error('User does not exist')
+    }
+    console.log(doc.data())
+    if (code !== doc.data().code) {
+        throw new Error('Code does not match')
+    }
+}
+
+export { firebase, addCodeToFirebase, getUser, getUserPhone, modifyUser, verifyCode }
