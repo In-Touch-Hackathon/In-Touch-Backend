@@ -7,7 +7,7 @@ const { VoiceResponse } = twiml
 const welcome = (req: Request, res: Response) => {
     const twiml = new VoiceResponse()
     const gather = twiml.gather({
-        action: '/voice/menu',
+        action: '/ivr/menu',
         numDigits: 1,
         method: 'POST',
     });
@@ -29,34 +29,32 @@ const menu = (req: Request, res: Response) => {
         '2': callVolunteer,
     };
 
-    (optionActions[Digits])? optionActions[Digits](res): returnWelcome(res)
-    return
+    var twimlResponse = (optionActions[Digits])? optionActions[Digits](): returnWelcome()
+    res.type('text/xml')
+    return res.send(twimlResponse)
 }
 
-const covid19Update = (res: Response) => {
-    const twiml = new VoiceResponse();
+const covid19Update = () => {
+    const twiml = new VoiceResponse()
     twiml.say({'voice': 'alice'}, speakStatistics(statistics));
-    res.type('text/xml');
-    res.send(twiml.toString())
+    return twiml.toString()
 }
 
-const callVolunteer = ( res: Response) => {
-    const twiml = new VoiceResponse();
+const callVolunteer = () => {
+    const twiml = new VoiceResponse()
     //find volunteer 
     const name = "test"
     const number = "+6421081810236"
     twiml.say({'voice': 'alice'}, `Connecting you to ${name}.`)
     twiml.dial(number)
-    res.type('text/xml');
-    res.send(twiml.toString())
+    return twiml.toString()
 }
 
-const returnWelcome = (res: Response) => {
-    const twiml = new VoiceResponse();
-    twiml.say({'voice': 'alice'}, 'Returning to the main menu');
-    twiml.redirect('/ivr/welcome');
-    res.type('text/xml');
-    res.send(twiml.toString())
+const returnWelcome = () => {
+    const twiml = new VoiceResponse()
+    twiml.say({'voice': 'alice'}, 'Returning to the main menu')
+    twiml.redirect('/ivr/welcome')
+    return twiml.toString()
 }
 
 export { welcome, menu }

@@ -1,4 +1,5 @@
-import { Router } from "express";
+import {Router} from "express";
+import { urlencoded } from 'body-parser';
 
 import { welcome, menu } from './controllers/twilio'
 import { healthcheck } from './controllers/healthcheck';
@@ -9,9 +10,8 @@ import { validate, auth } from "./middleware";
 const routes = (router: Router): Router => {
 
     // Twilio Incoming Call
-    router.post('/voice', welcome)
-    router.post('/voice/menu', menu)
-    router.post('/menu')
+    router.post('/ivr/welcome', urlencoded({ extended: false }), welcome)
+    router.post('/ivr/menu', urlencoded({ extended: false }), menu)
 
     // HealthCheck
     router.get('/healthcheck', healthcheck)
