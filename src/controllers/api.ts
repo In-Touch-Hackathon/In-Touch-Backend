@@ -29,7 +29,7 @@ const verify = async(req: Request, res: Response) => {
     try {
         let result =  await twilio.calls
         .create({
-            twiml: `<Response><Say>Your In Touch verification code is ${[...code].join(' ')}</Say></Response>`,
+            twiml: `<Response><Say>Your In Touch verification code is ${[...code].join('. ')}</Say></Response>`,
             to: phoneNumber,
             from: process.env.TWILIO_PHONE
         })
