@@ -45,7 +45,7 @@ export const fetchData = async () => {
             stats.probable_cases = parseRow(parser, e)
         } else if (header.startsWith('Number of confirmed and probable')) {
             stats.cases = parseRow(parser, e)
-        } else if (header.startsWith('Number of cases in hospital')) {
+        } else if (header.startsWith('Number of cases currently in hospital')) {
             stats.cases_in_hospital = parseRow(parser, e)
         } else if (header.startsWith('Number of recovered')) {
             stats.recovered = parseRow(parser, e)
