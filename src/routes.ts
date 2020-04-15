@@ -6,6 +6,7 @@ import { healthcheck } from './controllers/healthcheck';
 import { register, self, verify } from './controllers/api'
 
 import { validate, auth } from "./middleware";
+import { postRegister } from "./models";
 
 const routes = (router: Router): Router => {
 
@@ -20,8 +21,7 @@ const routes = (router: Router): Router => {
     router.post('/verify', auth, verify)
 
     // Register - phone number + name only
-    //router.post('/register', postRegister, validate, register)
-
+    router.post('/register',auth, postRegister, validate, register)
     // GetSelf - getself
 
     //router.get('/self', auth, self)

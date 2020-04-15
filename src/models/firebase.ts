@@ -1,8 +1,12 @@
-type volunteer = {
-    name: string,
-    phone: string,
-    verified: boolean,
-    created_date: string,
-}
+import { body } from "express-validator";
 
-export { volunteer }
+const postRegister = [
+    body("displayName").isString(),
+    body("phoneNumber").isString(),
+]
+
+const postCode = [
+    body("code").isString(),
+]
+
+export { postRegister, postCode }

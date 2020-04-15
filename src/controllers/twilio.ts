@@ -5,6 +5,7 @@ const { VoiceResponse } = twiml
 // WIP, doesn't work yet
 
 const welcome = (req: Request, res: Response) => {
+    console.log(req)
     const twiml = new VoiceResponse()
     const gather = twiml.gather({
         action: '/ivr/menu',
