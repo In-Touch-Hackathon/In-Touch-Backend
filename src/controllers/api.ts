@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import { addCodeToFirebase, getUserPhone, twilio, verifyCode } from '../libraries'
 import { randomCode } from "../util";
 import { modifyUser, getUser, firebase } from "../libraries"
+import { statistics} from "../data";
 
 
 const register = async (req: Request, res: Response) => {
@@ -66,4 +67,8 @@ const codeVerify = async (req: Request, res: Response) => {
     }
 }
 
-export { self, register, verify }
+const covid19 = async  (req: Request, res: Response) => {
+    res.status(200).send(statistics)
+}
+
+export { self, register, verify, covid19 }

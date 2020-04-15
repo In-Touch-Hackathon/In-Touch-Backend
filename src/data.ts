@@ -2,10 +2,12 @@ import {load} from 'cheerio'
 import fetch from 'node-fetch'
 
 const DATA_SOURCE = 'https://www.health.govt.nz/our-work/diseases-and-conditions/covid-19-novel-coronavirus/covid-19-current-situation/covid-19-current-cases'
+const LEVEL = 'https://covid19.govt.nz/alert-system/current-covid-19-alert-level/'
 
 export let statistics: Statistics = null
 
 export interface Statistics {
+    level: number
     cases: number // confirmed and probable
     confirmed_cases: number
     probable_cases: number
@@ -26,6 +28,7 @@ export const fetchData = async () => {
     let parser = load(body)
     let timestamp = parser('table caption').first().text().replace('As at ', '')
     let stats: Statistics = {
+        level: null,
         cases: null,
         confirmed_cases: null,
         probable_cases: null,
@@ -50,6 +53,8 @@ export const fetchData = async () => {
             stats.deaths = parseRow(parser, e)
         }
     })
+    let levelparser = load(await (await fetch(LEVEL)).text())
+    stats.level = Number(levelparser('div h3').first().text().replace('Level ', ''))
     return stats;
 }
 

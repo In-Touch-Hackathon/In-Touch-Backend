@@ -26,7 +26,7 @@ const addCodeToFirebase = async (uid: string, code: string) => {
 }
 
 const verifyCode = async (uid: string, code: string) => {
-    const doc = await db.doc(`users/${uid}`).get()
+    const doc = await db.doc(`codes/${uid}`).get()
     if (!doc.exists) {
         throw new Error('User does not exist')
     }
@@ -34,6 +34,7 @@ const verifyCode = async (uid: string, code: string) => {
     if (code !== doc.data().code) {
         throw new Error('Code does not match')
     }
+    await db.doc(`users/${uid}`).set({verifed: true}, { merge: true })
 }
 
 export { firebase, addCodeToFirebase, getUser, getUserPhone, modifyUser, verifyCode }

@@ -3,7 +3,7 @@ import { urlencoded } from 'body-parser';
 
 import { welcome, menu } from './controllers/twilio'
 import { healthcheck } from './controllers/healthcheck';
-import { register, self, verify } from './controllers/api'
+import { register, self, verify, covid19 } from './controllers/api'
 
 import { validate, auth } from "./middleware";
 import { postRegister } from "./models";
@@ -23,6 +23,9 @@ const routes = (router: Router): Router => {
     // Register - phone number + name only
     router.post('/register',auth, postRegister, validate, register)
     // GetSelf - getself
+
+    // Covid19 
+    router.get('/covid19', covid19)
 
     //router.get('/self', auth, self)
 
