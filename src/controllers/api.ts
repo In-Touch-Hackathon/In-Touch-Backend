@@ -1,9 +1,8 @@
 import { Request, Response } from 'express'
 import { addCodeToFirebase, getUserPhone, twilio, verifyCode } from '../libraries'
-import { randomCode } from "../util";
-import { modifyUser, getUser, firebase } from "../libraries"
-import { statistics} from "../data";
-
+import { randomCode } from '../util'
+import { modifyUser, getUser, firebase } from '../libraries'
+import { statistics } from '../data'
 
 const register = async (req: Request, res: Response) => {
     try {
@@ -71,4 +70,27 @@ const covid19 = async  (req: Request, res: Response) => {
     res.status(200).send(statistics)
 }
 
-export { self, register, verify, covid19 }
+const connect = async (req: Request, res: Response) => {
+    const uid = req.auth.uid
+    const conferenceId = req.params.conferenceId
+
+    const user = await getUser(uid)
+    if (!conferenceId)
+        return res.status(400).send({ message: 'No conference id' })
+    if (!user.get('verified'))
+        return res.status(400).send({ message: 'User not verified' })
+
+    const phoneNumber = await getUserPhone(uid)
+
+    await twilio.conferences(conferenceId)
+        .participants
+        .create({
+            from: process.env.TWILIO_PHONE,
+            to: phoneNumber,
+            startConferenceOnEnter: true
+        })
+
+    res.status(201).send({ message: 'Call send successfully'})
+}
+
+export { connect, self, register, verify, covid19 }
