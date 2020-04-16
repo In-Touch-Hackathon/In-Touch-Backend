@@ -17,9 +17,9 @@ const welcome = (req: Request, res: Response) => {
     });
 
     gather.say(
-        'Thanks for calling the In Touch Hotline ' +
-        'Please press 1 for current status of covid 19 ' +
-        'Press 2 to talk to a volunteer'
+        'Thanks for calling the In Touch Hotline. ' +
+        'Please press 1 for current status of covid 19. ' +
+        'Press 2 to talk to a volunteer.'
     );
     res.type('text/xml');
     res.send(twiml.toString());
@@ -33,7 +33,7 @@ const menu = (req: Request, res: Response) => {
         '2': callVolunteer,
     };
 
-    var twimlResponse = (optionActions[Digits])? optionActions[Digits](): returnWelcome()
+    var twimlResponse = optionActions[Digits]?.() ?? returnWelcome()
     res.type('text/xml')
     return res.send(twimlResponse)
 }
