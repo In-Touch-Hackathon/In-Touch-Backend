@@ -1,8 +1,11 @@
 import { Request, Response } from 'express'
+import { randomBytes } from 'crypto'
+import { promisify } from 'util'
 import { twiml } from 'twilio'
 import {speakStatistics, statistics} from "../data";
+import {sendNotification} from "../libraries";
 const { VoiceResponse } = twiml
-// WIP, doesn't work yet
+const randomBytesAsync = promisify(randomBytes)
 
 const welcome = (req: Request, res: Response) => {
     console.log(req)
@@ -41,13 +44,13 @@ const covid19Update = () => {
     return twiml.toString()
 }
 
-const callVolunteer = () => {
+const callVolunteer = async () => {
     const twiml = new VoiceResponse()
-    //find volunteer 
-    const name = "test"
-    const number = "+6421081810236"
-    twiml.say({'voice': 'alice'}, `Connecting you to ${name}.`)
-    twiml.dial(number)
+
+    sendNotification((await randomBytesAsync(20)).toString('hex'));
+
+    twiml.say({'voice': 'alice'}, `Putting you through to our network of volunteers.`)
+    twiml.dial().conference({startConferenceOnEnter: false}, '1');
     return twiml.toString()
 }
 

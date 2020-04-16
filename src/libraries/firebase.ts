@@ -5,8 +5,9 @@ firebase.initializeApp({
 })
 
 const db = firebase.firestore();
+const fcm = firebase.messaging();
 
-const modifyUser = async (uid: string, user: any) => 
+const modifyUser = async (uid: string, user: any) =>
     db.doc(`users/${uid}`).set(user)
 
 const getUser = async (uid: string) =>
@@ -37,4 +38,29 @@ const verifyCode = async (uid: string, code: string) => {
     await db.doc(`users/${uid}`).set({verifed: true}, { merge: true })
 }
 
-export { firebase, addCodeToFirebase, getUser, getUserPhone, modifyUser, verifyCode }
+const sendNotification = async (id: string) => {
+    const tokens = await db.collection('/fcmtokens').get()
+    const array = tokens.docs.map(doc => doc.id);
+
+    await fcm.sendMulticast({
+        notification: {
+            body: 'testing'
+        },
+        android: {
+            ttl: 0,
+            priority: 'high',
+            notification: {
+                priority: 'max',
+                channelId: 'IncomingCalls'
+            }
+        },
+        data: {
+            id,
+            click_action: 'FLUTTER_NOTIFICATION_CLICK'
+        },
+        tokens: array
+    })
+
+}
+
+export { firebase, addCodeToFirebase, getUser, getUserPhone, modifyUser, sendNotification, verifyCode }
