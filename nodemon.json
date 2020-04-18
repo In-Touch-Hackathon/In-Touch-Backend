@@ -6,5 +6,8 @@
     "ext": "js,ts,json",
     "ignore": [
     ],
+    "env": {
+        "NODE_OPTIONS": "--insecure-http-parser"
+    },
     "exec": "ts-node  --transpile-only ./src/app.ts"
 }
