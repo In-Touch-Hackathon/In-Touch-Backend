@@ -25,36 +25,38 @@ const welcome = (req: Request, res: Response) => {
     res.send(twiml.toString());
 }
 
-const menu = (req: Request, res: Response) => {
-    const { Digits } = req.body
+const menu = async (req: Request, res: Response) => {
+    const { Digits, From } = req.body
 
     const optionActions = {
         '1': covid19Update,
         '2': callVolunteer,
     };
 
-    var twimlResponse = optionActions[Digits]?.() ?? returnWelcome()
+    var twimlResponse = optionActions[Digits]?.(From) ?? returnWelcome()
     res.type('text/xml')
-    return res.send(twimlResponse)
+    return res.send(await twimlResponse)
 }
 
-const covid19Update = () => {
+const covid19Update = async () => {
     const twiml = new VoiceResponse()
     twiml.say({'voice': 'alice'}, speakStatistics(statistics));
     return twiml.toString()
 }
 
-const callVolunteer = async () => {
+const callVolunteer = async (from: string) => {
     const twiml = new VoiceResponse()
 
-    sendNotification((await randomBytesAsync(20)).toString('hex'));
+    const roomId = (await randomBytesAsync(20)).toString('hex')
+
+    sendNotification(from, roomId);
 
     twiml.say({'voice': 'alice'}, `Putting you through to our network of volunteers.`)
-    twiml.dial().conference({startConferenceOnEnter: false}, '1');
+    twiml.dial().conference({maxParticipants: 2, startConferenceOnEnter: false}, roomId);
     return twiml.toString()
 }
 
-const returnWelcome = () => {
+const returnWelcome = async () => {
     const twiml = new VoiceResponse()
     twiml.say({'voice': 'alice'}, 'Returning to the main menu')
     twiml.redirect('/ivr/welcome')

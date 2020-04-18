@@ -35,85 +35,34 @@ const verifyCode = async (uid: string, code: string) => {
     if (code !== doc.data().code) {
         throw new Error('Code does not match')
     }
-    await db.doc(`users/${uid}`).set({verifed: true}, { merge: true })
+    await db.doc(`users/${uid}`).set({verified: true}, { merge: true })
 }
 
-const sendNotification = async (id: string) => {
-    const tokens = await db.collection('/fcmtokens').get()
-    const array = tokens.docs.map(doc => doc.id);
-
-    await fcm.sendMulticast({
-        notification: {
-            body: 'testing'
-        },
-        android: {
-            ttl: 0,
-            priority: 'high',
+const sendNotification = async (from: string, id: string) => {
+    const collection = await db.collection('users').get()
+    for await (let user of collection.docs) {
+        console.log(user.id)
+        if (!user.get('fcmtokens')?.length) continue
+        await fcm.sendMulticast({
             notification: {
-                priority: 'max',
-                channelId: 'IncomingCalls'
-            }
-        },
-        data: {
-            id,
-            click_action: 'FLUTTER_NOTIFICATION_CLICK'
-        },
-        tokens: array
-    })
-
-}
-
-export { firebase, addCodeToFirebase, getUser, getUserPhone, modifyUser, sendNotification, verifyCode }
-interface AvailableUser {
-    uuid: string
-    phone_number: string
-}
-
-const getAvailableUser = async(): Promise<AvailableUser> => {
-    let ids = []
-    let toRemove = [] // We'll remove any users that have become unavailable
-    let now = firebase.firestore.Timestamp.now().seconds
-    let available = db.collection('available');
-    (await available.get()).forEach((documentSnapshot) => {
-        if (documentSnapshot.exists) {
-            let interval = documentSnapshot.data()
-            let start = interval.startTime.seconds
-            let end = interval.endTime.seconds
-            let id = documentSnapshot.id
-            if ((now > start) && (now < end)) {
-                if (!interval.inCall) {
-                    ids.push(id)
+                title: 'Incoming Call',
+                body: `${from} is requesting help...`
+            },
+            android: {
+                ttl: 0,
+                priority: 'high',
+                notification: {
+                    priority: 'max',
+                    channelId: 'IncomingCalls'
                 }
-            } else if (now >= end) {
-                // They are no longer available and thus should be removed
-                toRemove.push(id)
-            }
-        }
-    })
-
-    // We only need one available user, so we'll take the first one
-    let available_user = null
-    let users = db.collection('users')
-    for (let id of ids) {
-        let user = await users.doc(id).get()
-        if (user.exists) {
-            let phoneNumber = user.data().phoneNumber
-            available_user = { id, phoneNumber }
-            // toRemove.push(id) // We shouldn't delete the selected user from available
-            await available.doc(id).set({ inCall: true }, { merge: true })
-            break
-        } else {
-            // The user doesn't exist thus needs to be removed from the available collection
-            toRemove.push(id)
-        }
+            },
+            data: {
+                id,
+                click_action: 'FLUTTER_NOTIFICATION_CLICK'
+            },
+            tokens: user.get('fcmtokens')
+        })
     }
-
-    // Remove all unavailable users
-    for (let id of toRemove) {
-        available.doc(id).delete().then(()=>{})
-    }
-
-    return available_user;
 }
 
-export { AvailableUser, firebase, addCodeToFirebase, getAvailableUser, getUser, getUserPhone, modifyUser, verifyCode }
+export { sendNotification, firebase, addCodeToFirebase, getUser, getUserPhone, modifyUser, verifyCode }

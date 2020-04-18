@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { addCodeToFirebase, getUserPhone, twilio, verifyCode } from '../libraries'
+import {addCodeToFirebase, getUserPhone, sendNotification, twilio, verifyCode} from '../libraries'
 import { randomCode } from '../util'
 import { modifyUser, getUser, firebase } from '../libraries'
 import { statistics } from '../data'
@@ -82,15 +82,19 @@ const connect = async (req: Request, res: Response) => {
 
     const phoneNumber = await getUserPhone(uid)
 
-    await twilio.conferences(conferenceId)
-        .participants
-        .create({
-            from: process.env.TWILIO_PHONE,
-            to: phoneNumber,
-            startConferenceOnEnter: true
-        })
+    try {
+        const participant = await twilio.conferences(conferenceId)
+            .participants
+            .create({
+                from: process.env.TWILIO_PHONE,
+                to: phoneNumber,
+                startConferenceOnEnter: true
+            })
 
-    res.status(201).send({ message: 'Call send successfully'})
+        res.status(201).send({ message: 'Call send successfully'})
+    } catch (e) {
+        res.status(500).send({ message: 'Something went wrong' })
+    }
 }
 
 export { connect, self, register, verify, covid19 }
