@@ -83,16 +83,16 @@ const connect = async (req: Request, res: Response) => {
     const phoneNumber = await getUserPhone(uid)
 
     try {
-        const participant = await twilio.conferences(conferenceId)
-            .participants
-            .create({
-                from: process.env.TWILIO_PHONE,
-                to: phoneNumber,
-                startConferenceOnEnter: true
-            })
+        await twilio.conferences(conferenceId).participants.create({
+            from: process.env.TWILIO_PHONE,
+            to: phoneNumber,
+            startConferenceOnEnter: true,
+            endConferenceOnExit: true
+        })
 
-        res.status(201).send({ message: 'Call send successfully'})
+        res.status(201).send({message: 'Call send successfully'})
     } catch (e) {
+        console.log(e)
         res.status(500).send({ message: 'Something went wrong' })
     }
 }
