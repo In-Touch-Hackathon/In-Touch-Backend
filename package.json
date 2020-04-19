@@ -7,6 +7,9 @@
     "build": "tsc",
     "start": "nodemon"
   },
+  "engines": {
+    "node": ">=12.15.0"
+  },
   "dependencies": {
     "body-parser": "^1.19.0",
     "cheerio": "^1.0.0-rc.3",
