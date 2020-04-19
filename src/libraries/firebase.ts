@@ -45,8 +45,8 @@ const sendNotification = async (from: string, id: string) => {
         if (!user.get('fcmtokens')?.length) continue
         await fcm.sendMulticast({
             notification: {
-                title: 'Incoming Call',
-                body: `${from} is requesting help...`
+                title: `${from} is requesting help...`,
+                body: 'If you hear hold music, the other hand has hung up'
             },
             android: {
                 ttl: 0,

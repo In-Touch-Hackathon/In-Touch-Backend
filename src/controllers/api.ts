@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import {addCodeToFirebase, getUserPhone, sendNotification, twilio, verifyCode} from '../libraries'
+import {modifyUser, addCodeToFirebase, getUserPhone, sendNotification, twilio, verifyCode} from '../libraries'
 import { randomCode } from '../util'
 import { modifyUser, getUser, firebase } from '../libraries'
 import { statistics } from '../data'
@@ -45,7 +45,7 @@ const verify = async (req: Request, res: Response) => {
         .create({
             twiml: `<Response><Say>Your In Touch verification code is ${[...code].join('. ')}</Say></Response>`,
             to: phoneNumber,
-            from: process.env.TWILIO_PHONE
+            from: process.env.TWILIO_PHONE,
         })
         console.log(result)
         res.status(200).send({ message: 'Call sent successfully' })
@@ -88,6 +88,11 @@ const connect = async (req: Request, res: Response) => {
             to: phoneNumber,
             startConferenceOnEnter: true,
             endConferenceOnExit: true
+        })
+
+        await firebase.firestore().collection(`users/${uid}/calls`).add({
+            number: phoneNumber,
+            time: new Date()
         })
 
         res.status(201).send({message: 'Call send successfully'})
